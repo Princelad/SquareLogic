@@ -3,6 +3,7 @@ Logic for the chess engine
 """
 import numpy as np
 
+
 class GameState:
     def __init__(self):
         self.board = np.array([
@@ -23,6 +24,7 @@ class GameState:
         self.board[move.end_row][move.end_col] = move.piece_moved
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove
+
 
 class Move:
     ranks_to_rows = {"1": 7, "2": 6, "3": 5, "4": 4, "5": 3, "6": 2, "7": 1, "8": 0}

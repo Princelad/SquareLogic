@@ -3,15 +3,16 @@ This is the main driver file. Includes loading of different objects.
 """
 
 import pygame as pg
-import numpy as np
+
 from Chess import ChessEngine
 
 # Constants for the window and chessboard
 WIDTH = HEIGHT = 512
 DIMENSION = 8  # Dimension of the chess board (8x8)
 SQ_SIZE = HEIGHT // DIMENSION
-MAX_FPS = 15  # For animations
+MAX_FPS = 144  # For animations
 IMAGES = {}
+
 
 # Responsible for loading the images into the dictionary
 def load_images():
@@ -20,6 +21,7 @@ def load_images():
         IMAGES[piece] = pg.transform.scale(
             pg.image.load("images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE)
         )
+
 
 # Main driver function
 def main():
@@ -32,7 +34,7 @@ def main():
 
     running = True
     sq_selected = ()  # Keeps track of the selected square (row, col)
-    player_clicks = []  # List of selected squares
+    player_clicks = []  # List of selected squares.
 
     while running:
         for event in pg.event.get():
@@ -57,22 +59,41 @@ def main():
                     sq_selected = ()  # Reset user selection
                     player_clicks = []
 
-        draw_game_state(screen, game_state)
+        mouse_pos = pg.mouse.get_pos()
+        hover_square = (mouse_pos[1] // SQ_SIZE, mouse_pos[0] // SQ_SIZE)
+
+        draw_game_state(screen, game_state, hover_square, sq_selected)
         clock.tick(MAX_FPS)
         pg.display.flip()
 
+
 # Responsible for rendering the game state
-def draw_game_state(screen, game_state):
-    draw_board(screen)  # Draw the squares
+def draw_game_state(screen, game_state, hover_square, sq_selected):
+    draw_board(screen, hover_square, sq_selected)  # Draw the squares
     draw_pieces(screen, game_state.board)  # Draw the pieces on top of the squares
 
+
 # Draw the board (alternating colors)
-def draw_board(screen):
-    colors = [pg.Color("white"), pg.Color("gray")]
+def draw_board(screen, hover_square, sq_selected):
+    colors = [pg.Color(255, 206, 158), pg.Color(209, 139, 71)]
+    hover_color = pg.Color("lightblue")  # Highlight color for hover
+    selected_color = pg.Color("yellow")  # Highlight color for selected square
+
     for row in range(DIMENSION):
         for col in range(DIMENSION):
             color = colors[(row + col) % 2]
+
+            # Highlight hover square
+            if hover_square == (row, col):
+                color = hover_color
+
+            # Highlight selected square
+            if sq_selected == (row, col):
+                color = selected_color
+
+
             pg.draw.rect(screen, color, pg.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
 
 # Draw the pieces on the board
 def draw_pieces(screen, board):
@@ -81,6 +102,7 @@ def draw_pieces(screen, board):
             piece = board[row][col]
             if piece != "--":  # If not an empty square
                 screen.blit(IMAGES[piece], pg.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
 
 if __name__ == "__main__":
     main()
