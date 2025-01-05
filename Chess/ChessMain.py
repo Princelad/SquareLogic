@@ -27,6 +27,7 @@ def load_images():
 def main():
     pg.init()
     screen = pg.display.set_mode((WIDTH, HEIGHT))
+    pg.display.set_caption("Square Logic")
     clock = pg.time.Clock()
     screen.fill(pg.Color("white"))
     game_state = ChessEngine.GameState()
@@ -48,7 +49,7 @@ def main():
                 if sq_selected == (row, col):  # Deselect square if clicked twice
                     sq_selected = ()
                     player_clicks = []
-                else:
+                elif game_state.board[row][col] != "--" or len(player_clicks) == 1:
                     sq_selected = (row, col)
                     player_clicks.append(sq_selected)
 
@@ -76,23 +77,21 @@ def draw_game_state(screen, game_state, hover_square, sq_selected):
 # Draw the board (alternating colors)
 def draw_board(screen, hover_square, sq_selected):
     colors = [pg.Color(255, 206, 158), pg.Color(209, 139, 71)]
-    hover_color = pg.Color("lightblue")  # Highlight color for hover
-    selected_color = pg.Color("yellow")  # Highlight color for selected square
+    selected_color = pg.Color("lightblue")  # Highlight color for selected square
 
     for row in range(DIMENSION):
         for col in range(DIMENSION):
             color = colors[(row + col) % 2]
 
-            # Highlight hover square
-            if hover_square == (row, col):
-                color = hover_color
-
             # Highlight selected square
             if sq_selected == (row, col):
                 color = selected_color
 
-
             pg.draw.rect(screen, color, pg.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+            # Highlight hover square
+            if hover_square == (row, col):
+                pg.draw.rect(screen, "yellow", pg.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE), 3)
 
 
 # Draw the pieces on the board
