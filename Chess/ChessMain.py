@@ -59,6 +59,9 @@ def main():
                     game_state.make_move(move)
                     sq_selected = ()  # Reset user selection
                     player_clicks = []
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_BACKSPACE :
+                    game_state.undo_move()
 
         mouse_pos = pg.mouse.get_pos()
         hover_square = (mouse_pos[1] // SQ_SIZE, mouse_pos[0] // SQ_SIZE)

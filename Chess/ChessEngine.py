@@ -19,11 +19,20 @@ class GameState:
         self.whiteToMove = True
         self.moveLog = []
 
+    # Make move using the move object.
     def make_move(self, move):
         self.board[move.start_row][move.start_col] = "--"
         self.board[move.end_row][move.end_col] = move.piece_moved
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove
+
+    # Undo a move from the move log.
+    def undo_move(self):
+        if len(self.moveLog) != 0:  # Log should be non-empty to undo
+            move = self.moveLog.pop()
+            self.board[move.start_row][move.start_col] = move.piece_moved
+            self.board[move.end_row][move.end_col] = move.piece_captured
+            self.whiteToMove = not self.whiteToMove
 
 
 class Move:
