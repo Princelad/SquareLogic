@@ -31,6 +31,9 @@ def main():
     clock = pg.time.Clock()
     screen.fill(pg.Color("white"))
     game_state = ChessEngine.GameState()
+    valid_moves = game_state.get_valid_moves()
+    move_made = False  # Flag that checks weather the user has made a move
+
     load_images()  # Load the images
 
     running = True
@@ -56,12 +59,19 @@ def main():
                 if len(player_clicks) == 2:  # After two clicks, make a move
                     move = ChessEngine.Move(player_clicks[0], player_clicks[1], game_state.board)
                     print(move.get_chess_notation())
-                    game_state.make_move(move)
+                    if move in valid_moves:
+                        game_state.make_move(move)
+                        move_made = True
                     sq_selected = ()  # Reset user selection
                     player_clicks = []
             elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_BACKSPACE :
+                if event.key == pg.K_BACKSPACE:
                     game_state.undo_move()
+                    move_made = True
+
+        if move_made:
+            valid_moves = game_state.get_valid_moves()
+            move_made = False
 
         mouse_pos = pg.mouse.get_pos()
         hover_square = (mouse_pos[1] // SQ_SIZE, mouse_pos[0] // SQ_SIZE)

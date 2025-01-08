@@ -16,7 +16,7 @@ class GameState:
             ["wP", "wP", "wP", "wP", "wP", "wP", "wP", "wP"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
         ])
-        self.whiteToMove = True
+        self.white_to_move = True
         self.moveLog = []
 
     # Make move using the move object.
@@ -24,7 +24,7 @@ class GameState:
         self.board[move.start_row][move.start_col] = "--"
         self.board[move.end_row][move.end_col] = move.piece_moved
         self.moveLog.append(move)
-        self.whiteToMove = not self.whiteToMove
+        self.white_to_move = not self.white_to_move
 
     # Undo a move from the move log.
     def undo_move(self):
@@ -32,7 +32,80 @@ class GameState:
             move = self.moveLog.pop()
             self.board[move.start_row][move.start_col] = move.piece_moved
             self.board[move.end_row][move.end_col] = move.piece_captured
-            self.whiteToMove = not self.whiteToMove
+            self.white_to_move = not self.white_to_move
+
+    # Generate every valid moves
+    def get_valid_moves(self):
+        return self.get_all_possible_moves()
+
+    # Generate every possible moves for every piece
+    def get_all_possible_moves(self):
+        moves = []
+        for rows in range(len(self.board)):
+            for cols in range(len(self.board[rows])):
+                turn = self.board[rows][cols][0]
+                if (turn == "w" and self.white_to_move) or (turn == "b" and not self.white_to_move):
+                    piece = self.board[rows][cols][1]
+                    if piece == "P":
+                        self.get_pawn_moves(rows, cols, moves)
+                    elif piece == "R":
+                        self.get_rook_moves(rows, cols, moves)
+                    elif piece == "N":
+                        self.get_knight_moves(rows, cols, moves)
+                    elif piece == "B":
+                        self.get_bishop_moves(rows, cols, moves)
+                    elif piece == "Q":
+                        self.get_queen_moves(rows, cols, moves)
+                    else:
+                        self.get_king_moves(rows, cols, moves)
+        return moves
+
+    # Generate all moves possible for the given pawn at the row and column
+    def get_pawn_moves(self, rows, cols, moves):
+        if self.white_to_move:
+            if self.board[rows - 1][cols] == "--":  # One square pawn advance
+                moves.append(Move((rows, cols), (rows - 1, cols), self.board))
+                if rows == 6 and self.board[rows - 2][cols] == "--":  # Two square pawn advance
+                    moves.append(Move((rows, cols), (rows - 2, cols), self.board))
+
+            # Captures to the left
+            if cols - 1 >= 0 and self.board[rows - 1][cols - 1][0] == "b":  # Enemy piece on the diagonal
+                moves.append(Move((rows, cols), (rows - 1, cols - 1), self.board))
+
+            # Captures to the right
+            if cols + 1 <= 7 and self.board[rows - 1][cols + 1][0] == "b":
+                moves.append(Move((rows, cols), (rows - 1, cols + 1), self.board))
+        else:
+            if self.board[rows + 1][cols] == "--":
+                moves.append(Move((rows, cols), (rows + 1, cols), self.board))
+                if rows == 1 and self.board[rows + 2][cols] == "--":
+                    moves.append(Move((rows, cols), (rows + 2, cols), self.board))
+
+            if cols - 1 >= 0 and self.board[rows + 1][cols - 1][0] == "w":
+                moves.append(Move((rows, cols), (rows + 1, cols - 1), self.board))
+
+            if cols + 1 <= 7 and self.board[rows + 1][cols + 1][0] == "w":
+                moves.append(Move((rows, cols), (rows + 1, cols + 1), self.board))
+
+    # Generate all moves possible for the given rook at the row and column
+    def get_rook_moves(self, rows, cols, moves):
+        pass
+
+    # Generate all moves possible for the given knight at the row and column
+    def get_knight_moves(self, rows, cols, moves):
+        pass
+
+    # Generate all moves possible for the given bishop at the row and column
+    def get_bishop_moves(self, rows, cols, moves):
+        pass
+
+    # Generate all moves possible for the given queen at the row and column
+    def get_queen_moves(self, rows, cols, moves):
+        pass
+
+    # Generate all moves possible for the given king at the row and column
+    def get_king_moves(self, rows, cols, moves):
+        pass
 
 
 class Move:
@@ -48,6 +121,12 @@ class Move:
         self.end_col = end_sq[1]
         self.piece_moved = board[self.start_row][self.start_col]
         self.piece_captured = board[self.end_row][self.end_col]
+        self.move_id = 1000 * self.start_row + 100 * self.start_col + 10 * self.end_row + self.end_col
+
+    def __eq__(self, other):
+        if isinstance(other, Move):
+            return self.move_id == other.move_id
+        return False
 
     def get_chess_notation(self):
         return self.get_rank_file(self.start_row, self.start_col) + self.get_rank_file(self.end_row, self.end_col)
