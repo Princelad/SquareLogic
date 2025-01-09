@@ -89,23 +89,74 @@ class GameState:
 
     # Generate all moves possible for the given rook at the row and column
     def get_rook_moves(self, rows, cols, moves):
-        pass
+        direction = ((-1, 0), (0, -1), (1, 0), (0, 1))
+        enemy = "b" if self.white_to_move else "w"
+
+        for d in direction:
+            for i in range(1, 8):
+                end_row = rows + d[0] * i
+                end_col = cols + d[1] * i
+                if 0 <= end_row < 8 and 0 <= end_col < 8:
+                    end_piece = self.board[end_row][end_col]
+                    if end_piece == "--":
+                        moves.append(Move((rows, cols), (end_row, end_col), self.board))
+                    elif end_piece[0] == enemy:
+                        moves.append(Move((rows, cols), (end_row, end_col), self.board))
+                        break  # We can't jump the enemy piece
+                    else:  # Friendly piece
+                        break
+                else:  # Out of board
+                    break
 
     # Generate all moves possible for the given knight at the row and column
     def get_knight_moves(self, rows, cols, moves):
-        pass
+        knight_moves = ((-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1))
+        ally = "w" if self.white_to_move else "b"
+        for move in knight_moves:
+            end_row = rows + move[0]
+            end_col = cols + move[1]
+            if 0 <= end_row < 8 and 0 <= end_col < 8:
+                end_piece = self.board[end_row][end_col]
+                if end_piece[0] != ally:
+                    moves.append(Move((rows, cols), (end_row, end_col), self.board))
 
     # Generate all moves possible for the given bishop at the row and column
     def get_bishop_moves(self, rows, cols, moves):
-        pass
+        direction = ((-1, -1), (-1, 1), (1, -1), (1, 1))
+        enemy = "b" if self.white_to_move else "w"
+
+        for d in direction:
+            for i in range(1, 8):
+                end_row = rows + d[0] * i
+                end_col = cols + d[1] * i
+                if 0 <= end_row < 8 and 0 <= end_col < 8:
+                    end_piece = self.board[end_row][end_col]
+                    if end_piece == "--":
+                        moves.append(Move((rows, cols), (end_row, end_col), self.board))
+                    elif end_piece[0] == enemy:
+                        moves.append(Move((rows, cols), (end_row, end_col), self.board))
+                        break  # We can't jump the enemy piece
+                    else:  # Friendly piece
+                        break
+                else:  # Out of board
+                    break
 
     # Generate all moves possible for the given queen at the row and column
     def get_queen_moves(self, rows, cols, moves):
-        pass
+        self.get_rook_moves(rows, cols, moves)
+        self.get_bishop_moves(rows, cols, moves)
 
     # Generate all moves possible for the given king at the row and column
     def get_king_moves(self, rows, cols, moves):
-        pass
+        king_moves = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
+        ally = "w" if self.white_to_move else "b"
+        for move in king_moves:
+            end_row = rows + move[0]
+            end_col = cols + move[1]
+            if 0 <= end_row < 8 and 0 <= end_col < 8:
+                end_piece = self.board[end_row][end_col]
+                if end_piece[0] != ally:
+                    moves.append(Move((rows, cols), (end_row, end_col), self.board))
 
 
 class Move:

@@ -69,16 +69,16 @@ def main():
                     game_state.undo_move()
                     move_made = True
 
-        if move_made:
-            valid_moves = game_state.get_valid_moves()
-            move_made = False
-
         mouse_pos = pg.mouse.get_pos()
         hover_square = (mouse_pos[1] // SQ_SIZE, mouse_pos[0] // SQ_SIZE)
 
         draw_game_state(screen, game_state, hover_square, sq_selected)
         clock.tick(MAX_FPS)
         pg.display.flip()
+
+        if move_made:
+            valid_moves = game_state.get_valid_moves()
+            move_made = False
 
 
 # Responsible for rendering the game state
