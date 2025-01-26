@@ -18,12 +18,21 @@ class GameState:
         ])
         self.white_to_move = True
         self.moveLog = []
+        self.white_king_location = (7, 4)
+        self.black_king_location = (0, 4)
+        self.checkmate = False
+        self.stalemate = False
 
     # Make move using the move object.
     def make_move(self, move):
         self.board[move.start_row][move.start_col] = "--"
         self.board[move.end_row][move.end_col] = move.piece_moved
         self.moveLog.append(move)
+        # Update the king's location after the move
+        if move.piece_moved == "wK":
+            self.white_king_location = (move.end_row, move.end_col)
+        else:
+            self.black_king_location = (move.end_row, move.end_col)
         self.white_to_move = not self.white_to_move
 
     # Undo a move from the move log.
@@ -32,6 +41,11 @@ class GameState:
             move = self.moveLog.pop()
             self.board[move.start_row][move.start_col] = move.piece_moved
             self.board[move.end_row][move.end_col] = move.piece_captured
+            # Updating the king's location after undo
+            if move.piece_moved == "wK":
+                self.white_king_location = (move.start_row, move.start_col)
+            else:
+                self.black_king_location = (move.start_row, move.start_col)
             self.white_to_move = not self.white_to_move
 
     # Generate every valid moves
