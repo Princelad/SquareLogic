@@ -1,11 +1,19 @@
 """
-Logic for the chess engine
+Logic for the chess engine.
 """
+
 import numpy as np
 
 
 class GameState:
+    """
+    Represents the current state of a chess game.
+    """
+
     def __init__(self):
+        """
+        Initializes the chessboard, turn indicator, and move log.
+        """
         self.board = np.array([
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
             ["bP", "bP", "bP", "bP", "bP", "bP", "bP", "bP"],
@@ -17,62 +25,120 @@ class GameState:
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]
         ])
         self.white_to_move = True
-        self.moveLog = []
+        self.move_log = []
         self.white_king_location = (7, 4)
         self.black_king_location = (0, 4)
         self.checkmate = False
         self.stalemate = False
 
-    # Make move using the move object.
     def make_move(self, move):
+        """
+        Executes a move on the board and updates game state.
+        """
         self.board[move.start_row][move.start_col] = "--"
         self.board[move.end_row][move.end_col] = move.piece_moved
-        self.moveLog.append(move)
-        # Update the king's location after the move
+        self.move_log.append(move)
+
+        # Update king's location
         if move.piece_moved == "wK":
             self.white_king_location = (move.end_row, move.end_col)
-        else:
+        elif move.piece_moved == "bK":
             self.black_king_location = (move.end_row, move.end_col)
+
         self.white_to_move = not self.white_to_move
 
-    # Undo a move from the move log.
     def undo_move(self):
-        if len(self.moveLog) != 0:  # Log should be non-empty to undo
-            move = self.moveLog.pop()
+        """
+        Reverts the last move from the move log.
+        """
+        if self.move_log:
+            move = self.move_log.pop()
             self.board[move.start_row][move.start_col] = move.piece_moved
             self.board[move.end_row][move.end_col] = move.piece_captured
-            # Updating the king's location after undo
+
+            # Update king's location
             if move.piece_moved == "wK":
                 self.white_king_location = (move.start_row, move.start_col)
-            else:
+            elif move.piece_moved == "bK":
                 self.black_king_location = (move.start_row, move.start_col)
+
             self.white_to_move = not self.white_to_move
 
-    # Generate every valid moves
     def get_valid_moves(self):
-        return self.get_all_possible_moves()
+        """
+        Returns all valid moves, filtering out moves that leave the king in check.
+        """
+        moves = self.get_all_possible_moves()
+        valid_moves = []
 
-    # Generate every possible moves for every piece
+        for move in moves:
+            self.make_move(move)
+            self.white_to_move = not self.white_to_move  # Simulate opponent's turn
+            if not self.in_check():
+                valid_moves.append(move)
+            self.white_to_move = not self.white_to_move  # Undo simulation
+            self.undo_move()
+
+        # Either stalemate or checkmate
+        if len(valid_moves) == 0:
+            if self.in_check():
+                self.checkmate = True
+            else:
+                self.stalemate = True
+        else:
+            self.stalemate = False
+            self.checkmate = False
+
+        return valid_moves
+
+    def in_check(self):
+        """
+        Checks if the current player's king is in check.
+        """
+        if self.white_to_move:
+            return self.square_under_attack(self.white_king_location[0], self.white_king_location[1])
+        else:
+            return self.square_under_attack(self.black_king_location[0], self.black_king_location[1])
+
+    def square_under_attack(self, row, col):
+        """
+        Checks if the given square is under attack by the opponent.
+        """
+        self.white_to_move = not self.white_to_move
+        opp_moves = self.get_all_possible_moves()
+        self.white_to_move = not self.white_to_move
+
+        return any(move.end_row == row and move.end_col == col for move in opp_moves)
+
     def get_all_possible_moves(self):
+        """
+        Generates all possible moves for the current player.
+        """
         moves = []
-        for rows in range(len(self.board)):
-            for cols in range(len(self.board[rows])):
-                turn = self.board[rows][cols][0]
+        for row in range(len(self.board)):
+            for col in range(len(self.board[row])):
+                turn = self.board[row][col][0]
                 if (turn == "w" and self.white_to_move) or (turn == "b" and not self.white_to_move):
-                    piece = self.board[rows][cols][1]
-                    if piece == "P":
-                        self.get_pawn_moves(rows, cols, moves)
-                    elif piece == "R":
-                        self.get_rook_moves(rows, cols, moves)
-                    elif piece == "N":
-                        self.get_knight_moves(rows, cols, moves)
-                    elif piece == "B":
-                        self.get_bishop_moves(rows, cols, moves)
-                    elif piece == "Q":
-                        self.get_queen_moves(rows, cols, moves)
-                    else:
-                        self.get_king_moves(rows, cols, moves)
+                    piece_type = self.board[row][col][1]
+                    self.get_piece_moves(piece_type, row, col, moves)
         return moves
+
+    def get_piece_moves(self, piece_type, row, col, moves):
+        """
+        Generates moves for a specific piece based on its type.
+        """
+        if piece_type == "P":
+            self.get_pawn_moves(row, col, moves)
+        elif piece_type == "R":
+            self.get_rook_moves(row, col, moves)
+        elif piece_type == "N":
+            self.get_knight_moves(row, col, moves)
+        elif piece_type == "B":
+            self.get_bishop_moves(row, col, moves)
+        elif piece_type == "Q":
+            self.get_queen_moves(row, col, moves)
+        elif piece_type == "K":
+            self.get_king_moves(row, col, moves)
 
     # Generate all moves possible for the given pawn at the row and column
     def get_pawn_moves(self, rows, cols, moves):
@@ -174,6 +240,9 @@ class GameState:
 
 
 class Move:
+    """
+    Represents a chess move with start and end positions, and metadata.
+    """
     ranks_to_rows = {"1": 7, "2": 6, "3": 5, "4": 4, "5": 3, "6": 2, "7": 1, "8": 0}
     rows_to_ranks = {v: k for k, v in ranks_to_rows.items()}
     files_to_cols = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
@@ -186,15 +255,19 @@ class Move:
         self.end_col = end_sq[1]
         self.piece_moved = board[self.start_row][self.start_col]
         self.piece_captured = board[self.end_row][self.end_col]
-        self.move_id = 1000 * self.start_row + 100 * self.start_col + 10 * self.end_row + self.end_col
+        self.move_id = self.start_row * 1000 + self.start_col * 100 + self.end_row * 10 + self.end_col
 
     def __eq__(self, other):
-        if isinstance(other, Move):
-            return self.move_id == other.move_id
-        return False
+        return isinstance(other, Move) and self.move_id == other.move_id
 
     def get_chess_notation(self):
+        """
+        Converts the move to standard chess notation.
+        """
         return self.get_rank_file(self.start_row, self.start_col) + self.get_rank_file(self.end_row, self.end_col)
 
     def get_rank_file(self, row, col):
+        """
+        Converts a row and column to chess notation (e.g., 'e2').
+        """
         return self.cols_to_files[col] + self.rows_to_ranks[row]
