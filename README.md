@@ -22,7 +22,7 @@ A simple yet interactive chess game built using **Python** and **Pygame**. This 
    ```  
 2. **Install dependencies**  
    ```bash
-   pip install pygame
+   pip install -r requirements.txt
    ```  
 3. **Run the game**  
    ```bash
