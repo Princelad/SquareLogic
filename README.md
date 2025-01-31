@@ -26,7 +26,7 @@ A simple yet interactive chess game built using **Python** and **Pygame**. This 
    ```  
 3. **Run the game**  
    ```bash
-   python main.py
+   python Chess/ChessMain.py
    ```  
 
 ## 🎮 How to Play  
