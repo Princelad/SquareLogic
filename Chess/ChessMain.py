@@ -85,7 +85,7 @@ def main():
         mouse_pos = pg.mouse.get_pos()
         hover_square = (mouse_pos[1] // SQ_SIZE, mouse_pos[0] // SQ_SIZE)
 
-        draw_game_state(screen, game_state, hover_square, sq_selected)
+        draw_game_state(screen, game_state, hover_square, sq_selected, valid_moves)
         clock.tick(MAX_FPS)
         pg.display.flip()
 
@@ -95,23 +95,19 @@ def main():
 
 
 # Responsible for rendering the game state
-def draw_game_state(screen, game_state, hover_square, sq_selected):
-    draw_board(screen, hover_square, sq_selected)  # Draw the squares
+def draw_game_state(screen, game_state, hover_square, sq_selected, valid_moves):
+    draw_board(screen, hover_square)  # Draw the squares
+    highlight_squares(screen, game_state, valid_moves, sq_selected)
     draw_pieces(screen, game_state.board)  # Draw the pieces on top of the squares
 
 
 # Draw the board (alternating colors)
-def draw_board(screen, hover_square, sq_selected):
+def draw_board(screen, hover_square):
     colors = [pg.Color(255, 206, 158), pg.Color(209, 139, 71)]
-    selected_color = pg.Color("lightblue")  # Highlight color for selected square
 
     for row in range(DIMENSION):
         for col in range(DIMENSION):
             color = colors[(row + col) % 2]
-
-            # Highlight selected square
-            if sq_selected == (row, col):
-                color = selected_color
 
             pg.draw.rect(screen, color, pg.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
@@ -127,6 +123,22 @@ def draw_pieces(screen, board):
             piece = board[row][col]
             if piece != "--":  # If not an empty square
                 screen.blit(IMAGES[piece], pg.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+
+# Draw moves and selected square
+def highlight_squares(screen, game_state, valid_moves, sq_selected):
+    if sq_selected != ():
+        r, c = sq_selected
+        if game_state.board[r][c][0] == ("w" if game_state.white_to_move else "b"):
+            # Highlight selected square with a yellowish tint
+            pg.draw.rect(screen, pg.Color(255, 255, 100, 100), (c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE), 0)
+
+            # Highlight valid move destinations with a grayish circle
+            for move in valid_moves:
+                if move.start_row == r and move.start_col == c:
+                    center = ((move.end_col * SQ_SIZE) + SQ_SIZE // 2, (move.end_row * SQ_SIZE) + SQ_SIZE // 2)
+                    radius = SQ_SIZE // 6  # Small indicator in the center
+                    pg.draw.circle(screen, pg.Color(128, 128, 128, 180), center, radius)
 
 
 if __name__ == "__main__":
