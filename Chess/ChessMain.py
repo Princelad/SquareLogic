@@ -113,7 +113,8 @@ def draw_board(screen, hover_square):
 
             # Highlight hover square
             if hover_square == (row, col):
-                pg.draw.rect(screen, "yellow", pg.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE), 3)
+                pg.draw.rect(screen, pg.Color(255, 255, 100, 100),
+                             pg.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE), 3)
 
 
 # Draw the pieces on the board
