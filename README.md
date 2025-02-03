@@ -1,5 +1,3 @@
-
----
 # Square Logic ♟️  
 
 A simple yet interactive chess game built using **Python** and **Pygame**. This project features an intuitive chessboard, move validation, and user interactions for a smooth chess-playing experience.  
@@ -49,11 +47,11 @@ SquareLogic/
 
 ## 🖼️ Screenshots  
 
-### Game Start
-![Game Start](project-images/Game_start.png)
-
 ### Game State
 ![Game State](project-images/Game_state.png)
+
+### Selected Square and Move Highlighting
+![Highlighting](project-images/highlighting.png)
 ## 🚀 Future Improvements  
 
 - Add **AI opponent** for single-player mode.   
