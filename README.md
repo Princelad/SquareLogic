@@ -24,7 +24,7 @@ A simple yet interactive chess game built using **Python** and **Pygame**. This 
    ```  
 3. **Run the game**  
    ```bash
-   python Chess/ChessMain.py
+   python src/main.py
    ```  
 
 ## 🎮 How to Play  
@@ -37,10 +37,26 @@ A simple yet interactive chess game built using **Python** and **Pygame**. This 
 
 ```
 SquareLogic/
-│── images/              # Chess piece images
-│── Chess/               # Chess logic and engine
-│   ├── ChessEngine.py   # Handles game rules and move validation
-│   └── ChessMain.py     # Main driver script
+│── assets/              # Chess piece images
+│   └── pieces/          # Individual piece images
+│── screenshot/          # Screenshots of the game
+│── src/                 # Source code
+│   ├── pieces/          # Piece-specific logic
+│   │   ├── bishop.py
+│   │   ├── king.py
+│   │   ├── knight.py
+│   │   ├── pawn.py
+│   │   ├── piece.py
+│   │   ├── queen.py
+│   │   └── rook.py
+│   ├── board.py         # Board logic
+│   ├── chess.py         # Main game logic
+│   ├── engine.py        # Game state and move validation
+│   ├── keymanager.py    # Key event handling
+│   ├── main.py          # Entry point of the game
+│   └── move.py          # Move representation
+│── .gitignore           # Git ignore file
+│── LICENSE              # License file
 │── README.md            # Project documentation
 └── requirements.txt     # Dependencies
 ```
@@ -48,10 +64,10 @@ SquareLogic/
 ## 🖼️ Screenshots  
 
 ### Game State
-![Game State](project-images/Game_state.png)
+![Game State](screenshot/Game_state.png)
 
 ### Selected Square and Move Highlighting
-![Highlighting](project-images/highlighting.png)
+![Highlighting](screenshot/highlighting.png)
 ## 🚀 Future Improvements  
 
 - Add **AI opponent** for single-player mode.   
