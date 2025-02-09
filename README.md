@@ -6,8 +6,10 @@ A simple yet interactive chess game built using **Python** and **Pygame**. This 
 
 - **Interactive Chessboard** – Click-based movement with move validation.  
 - **Move Validation** – Checks for legal moves and prevents invalid ones.  
-- **Undo Move** – Press `Backspace` to undo the last move.  
-- **Hover & Selection Highlights** – Enhances visual clarity of moves.  
+- **Undo Move** – Press `Backspace` to undo the last move.
+- **Reset Board** - Press `r` to reset the board.  
+- **Hover & Selection Highlights** – Enhances visual clarity of moves.
+- **Last Move Highlights** - Shows the last move played  
 - **Pawn Promotion** – Automatically promotes pawns (default: Queen).  
 - **Smooth Animations** – Runs at up to 144 FPS for fluid visuals.  
 
@@ -30,7 +32,8 @@ A simple yet interactive chess game built using **Python** and **Pygame**. This 
 ## 🎮 How to Play  
 
 - Click on a piece to select it, then click on a valid square to move.  
-- Press `Backspace` to undo the last move.  
+- Press `Backspace` to undo the last move.
+- Press `r` to reset the board  
 - Hovering over squares will highlight them for better visibility.  
 
 ## 📁 Project Structure  
@@ -67,6 +70,9 @@ SquareLogic/
 
 ### Selected Square and Move Highlighting
 ![Highlighting](screenshot/highlighting.png)
+
+### Checkmate
+![Checkmate](screenshot/Checkmate.png)
 ## 🚀 Future Improvements  
 
 - Add **AI opponent** for single-player mode.   
