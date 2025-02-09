@@ -30,3 +30,4 @@ class KeyManager:
         self.quit = False
         self.mouse_button_down = False
         self.backspace_pressed = False
+        self.reset_pressed = False
