@@ -1,4 +1,7 @@
-# src/pieces/piece.py
+'''
+class Piece represents a chess piece with a color and position.
+'''
+
 class Piece:
     def __init__(self, board, white_to_move):
         self.board = board

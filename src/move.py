@@ -1,3 +1,7 @@
+'''
+class Move represents a chess move with start and end positions, and metadata.
+'''
+
 class Move:
     """
     Represents a chess move with start and end positions, and metadata.

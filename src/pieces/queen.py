@@ -1,4 +1,7 @@
-# src/pieces/queen.py
+'''
+class Queen gets the moves of the queen piece on the board
+'''
+
 from pieces.piece import Piece
 from pieces.rook import Rook
 from pieces.bishop import Bishop

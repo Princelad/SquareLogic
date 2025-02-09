@@ -1,4 +1,7 @@
-# src/pieces/king.py
+'''
+class King gets all the possible moves for the king piece on the board
+'''
+
 from pieces.piece import Piece
 from move import Move
 

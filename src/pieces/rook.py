@@ -1,4 +1,7 @@
-# src/pieces/rook.py
+'''
+class Rook gets the moves of the rook piece on the board
+'''
+
 from pieces.piece import Piece
 from move import Move
 

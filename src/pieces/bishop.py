@@ -1,4 +1,7 @@
-# src/pieces/bishop.py
+'''
+class Bishop(Piece) represents the bishop piece and its movement logic.
+'''
+
 from pieces.piece import Piece
 from move import Move
 

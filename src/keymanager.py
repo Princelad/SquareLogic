@@ -1,3 +1,7 @@
+'''
+This module is responsible for handling the key events.
+'''
+
 import pygame as pg
 
 class KeyManager:

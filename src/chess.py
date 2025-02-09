@@ -1,3 +1,7 @@
+'''
+Main driver file. Responsible for handling user input and displaying the current GameState object.
+'''
+
 import pygame as pg
 from keymanager import KeyManager
 import engine

@@ -1,3 +1,7 @@
+'''
+Main runner for the chess game.
+'''
+
 from chess import chess
 
 

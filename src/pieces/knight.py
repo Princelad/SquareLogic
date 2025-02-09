@@ -1,4 +1,7 @@
-# src/pieces/knight.py
+'''
+class Knight gets all the possible moves for a knight piece on the board
+'''
+
 from pieces.piece import Piece
 from move import Move
 

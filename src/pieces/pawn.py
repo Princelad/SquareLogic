@@ -1,4 +1,7 @@
-# src/pieces/pawn.py
+'''
+Pawn class generates all possible moves for a pawn piece on the board.
+'''
+
 from pieces.piece import Piece
 from move import Move
 
