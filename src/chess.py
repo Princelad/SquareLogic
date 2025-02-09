@@ -79,6 +79,13 @@ class chess():
                 self.game_state.undo_move()
                 move_made = True
                 animate = False
+            elif self.key_manager.reset_pressed:
+                self.game_state = engine.GameState()
+                valid_moves = self.game_state.get_valid_moves()
+                sq_selected = ()
+                player_clicks = []
+                move_made = False
+                animate = False
 
             mouse_pos = pg.mouse.get_pos()
             hover_square = (mouse_pos[1] // SQ_SIZE, mouse_pos[0] // SQ_SIZE)
