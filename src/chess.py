@@ -29,6 +29,7 @@ class chess():
         pg.display.set_caption("Square Logic")
         valid_moves = self.game_state.get_valid_moves()
         move_made = False  # Flag that checks weather the user has made a move
+        animate = False  # Flag that checks weather the user has made a move
         promotion_type = "Q"
         sq_selected = ()  # Keeps track of the selected square (row, col)
         player_clicks = []  # List of selected squares.
@@ -68,6 +69,7 @@ class chess():
                             else:
                                 self.game_state.make_move(valid_moves[i])
                             move_made = True
+                            animate = True
                             sq_selected = ()  # Reset user selection
                             player_clicks = []
                     if not move_made:
@@ -76,6 +78,7 @@ class chess():
             elif self.key_manager.backspace_pressed:
                 self.game_state.undo_move()
                 move_made = True
+                animate = False
 
             mouse_pos = pg.mouse.get_pos()
             hover_square = (mouse_pos[1] // SQ_SIZE, mouse_pos[0] // SQ_SIZE)
@@ -86,6 +89,9 @@ class chess():
             pg.display.flip()
 
             if move_made:
+                if animate:
+                    self.animate_move(
+                        self.game_state.move_log[-1])
                 valid_moves = self.game_state.get_valid_moves()
                 move_made = False
 
@@ -101,44 +107,46 @@ class chess():
             )
 
     # Responsible for rendering the game state
-    def draw_game_state(self, screen, game_state, hover_square, sq_selected, valid_moves):
-        self.draw_board(screen, hover_square)  # Draw the squares
-        self.highlight_squares(screen, game_state, valid_moves, sq_selected)
+    def draw_game_state(self, hover_square, sq_selected, valid_moves, last_move=None):
+        self.draw_board(hover_square)  # Draw the squares
+        self.highlight_squares(valid_moves, sq_selected)
+        self.last_move_made(last_move)
         # Draw the pieces on top of the squares
-        self.draw_pieces(screen, game_state.board)
+        self.draw_pieces()
 
     # Draw the board (alternating colors)
-    def draw_board(self, screen, hover_square):
+    def draw_board(self, hover_square=None):
+        global colors
         colors = [pg.Color(255, 206, 158), pg.Color(209, 139, 71)]
 
         for row in range(DIMENSION):
             for col in range(DIMENSION):
                 color = colors[(row + col) % 2]
 
-                pg.draw.rect(screen, color, pg.Rect(
+                pg.draw.rect(self.screen, color, pg.Rect(
                     col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
                 # Highlight hover square
                 if hover_square == (row, col):
-                    pg.draw.rect(screen, pg.Color(255, 255, 100, 100),
+                    pg.draw.rect(self.screen, pg.Color(255, 255, 100, 100),
                                  pg.Rect(col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE), 3)
 
     # Draw the pieces on the board
-    def draw_pieces(self, screen, board):
+    def draw_pieces(self):
         for row in range(DIMENSION):
             for col in range(DIMENSION):
-                piece = board[row][col]
+                piece = self.game_state.board[row][col]
                 if piece != "--":  # If not an empty square
-                    screen.blit(IMAGES[piece], pg.Rect(
+                    self.screen.blit(IMAGES[piece], pg.Rect(
                         col * SQ_SIZE, row * SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
     # Draw moves and selected square
-    def highlight_squares(self, screen, game_state, valid_moves, sq_selected):
+    def highlight_squares(self, valid_moves, sq_selected):
         if sq_selected != ():
             r, c = sq_selected
-            if game_state.board[r][c][0] == ("w" if game_state.white_to_move else "b"):
+            if self.game_state.board[r][c][0] == ("w" if self.game_state.white_to_move else "b"):
                 # Highlight selected square with a yellowish tint
-                pg.draw.rect(screen, pg.Color(255, 255, 100, 100),
+                pg.draw.rect(self.screen, pg.Color(255, 255, 100, 100),
                              (c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE), 0)
 
                 # Highlight valid move destinations with a grayish circle
@@ -147,7 +155,7 @@ class chess():
                         center = ((move.end_col * SQ_SIZE) + SQ_SIZE //
                                   2, (move.end_row * SQ_SIZE) + SQ_SIZE // 2)
                         radius = SQ_SIZE // 6  # Small indicator in the center
-                        pg.draw.circle(screen, pg.Color(
+                        pg.draw.circle(self.screen, pg.Color(
                             255, 255, 100, 100), center, radius)
 
     # Highlight the last move made
@@ -164,5 +172,27 @@ class chess():
             pg.draw.rect(self.screen, highlight_color, end_square)
 
     # Move animation
-    def animate_move(self, screen, game_state, move, clock):
-        pass
+    def animate_move(self, move):
+        global colors
+        dR = move.end_row - move.start_row
+        dC = move.end_col - move.start_col
+        frames_per_square = 20  # Frames to move one square
+        frames_count = (abs(dR) + abs(dC)) * frames_per_square
+        for frame in range(frames_count + 1):
+            r, c = (move.start_row + dR * frame / frames_count,
+                    move.start_col + dC * frame / frames_count)
+            self.draw_board()
+            self.draw_pieces()
+            # Erase the piece from the ending square
+            color = colors[(move.end_row + move.end_col) % 2]
+            end_square = pg.Rect(
+                move.end_col * SQ_SIZE, move.end_row * SQ_SIZE, SQ_SIZE, SQ_SIZE)
+            pg.draw.rect(self.screen, color, end_square)
+            # Draw captured piece back
+            if move.piece_captured != "--":
+                self.screen.blit(IMAGES[move.piece_captured], end_square)
+            # Draw moving piece
+            self.screen.blit(IMAGES[move.piece_moved], pg.Rect(
+                int(c * SQ_SIZE), int(r * SQ_SIZE), SQ_SIZE, SQ_SIZE))
+            pg.display.flip()
+            self.clock.tick(MAX_FPS)
