@@ -76,8 +76,8 @@ class chess():
             mouse_pos = pg.mouse.get_pos()
             hover_square = (mouse_pos[1] // SQ_SIZE, mouse_pos[0] // SQ_SIZE)
 
-            self.draw_game_state(self.screen, self.game_state,
-                                 hover_square, sq_selected, valid_moves)
+            self.draw_game_state(hover_square, sq_selected, valid_moves, self.game_state.move_log[-1] if len(
+                self.game_state.move_log) != 0 else None)
             self.clock.tick(MAX_FPS)
             pg.display.flip()
 
@@ -145,6 +145,19 @@ class chess():
                         radius = SQ_SIZE // 6  # Small indicator in the center
                         pg.draw.circle(screen, pg.Color(
                             255, 255, 100, 100), center, radius)
+
+    # Highlight the last move made
+    def last_move_made(self, move):
+        if move is not None:
+            start_square = pg.Rect(
+                move.start_col * SQ_SIZE, move.start_row * SQ_SIZE, SQ_SIZE, SQ_SIZE)
+            end_square = pg.Rect(move.end_col * SQ_SIZE,
+                                 move.end_row * SQ_SIZE, SQ_SIZE, SQ_SIZE)
+            # Reddish color for highlighting
+            highlight_color = pg.Color(255, 0, 0, 100)
+
+            pg.draw.rect(self.screen, highlight_color, start_square)
+            pg.draw.rect(self.screen, highlight_color, end_square)
 
     # Move animation
     def animate_move(self, screen, game_state, move, clock):
