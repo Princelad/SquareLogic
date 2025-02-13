@@ -4,7 +4,7 @@ Main driver file. Responsible for handling user input and displaying the current
 
 import pygame as pg
 from keymanager import KeyManager
-import engine
+import engine, ai
 
 # Constants for the window and chessboard
 WIDTH = HEIGHT = 512
@@ -34,14 +34,20 @@ class chess():
         sq_selected = ()  # Keeps track of the selected square (row, col)
         player_clicks = []  # List of selected squares.
         game_over = False
+        player_one = True  # If a human is playing white, then this will be True. If an AI is playing then it will be False
+        # If a human is playing black, then this will be True. If an AI is playing then it will be False
+        player_two = False
 
         while self.running:
+            human_turn = (self.game_state.white_to_move and player_one) or (
+                not self.game_state.white_to_move and player_two)
+
             self.key_manager.handle_events()
 
             if self.key_manager.quit:
                 self.running = False
             elif self.key_manager.mouse_button_down:
-                if not game_over:
+                if not game_over and human_turn:
                     # (x, y) position of the mouse
                     mouse_pos = self.key_manager.mouse_pos
                     col = mouse_pos[0] // SQ_SIZE
@@ -91,12 +97,14 @@ class chess():
                 animate = False
                 game_over = False
 
-            mouse_pos = pg.mouse.get_pos()
-            hover_square = (mouse_pos[1] // SQ_SIZE, mouse_pos[0] // SQ_SIZE)
-
-            self.draw_game_state(hover_square, sq_selected, valid_moves, self.game_state.move_log[-1] if len(
-                self.game_state.move_log) != 0 else None)
-            self.clock.tick(MAX_FPS)
+            # AI move
+            if not game_over and not human_turn:
+                AIMove = ai.get_best_move(self.game_state, valid_moves)
+                if AIMove is None:
+                    AIMove = ai.get_random_move(valid_moves)
+                self.game_state.make_move(AIMove)
+                move_made = True
+                animate = True
 
             if move_made:
                 if animate:
@@ -115,6 +123,9 @@ class chess():
                 game_over = True
                 self.draw_text("Stalemate")
 
+            self.draw_game_state(sq_selected, valid_moves, self.game_state.move_log[-1] if len(
+                self.game_state.move_log) != 0 else None)
+            self.clock.tick(MAX_FPS)
             pg.display.flip()
         pg.quit()
 
@@ -128,17 +139,20 @@ class chess():
             )
 
     # Responsible for rendering the game state
-    def draw_game_state(self, hover_square, sq_selected, valid_moves, last_move=None):
-        self.draw_board(hover_square)  # Draw the squares
+    def draw_game_state(self,  sq_selected, valid_moves, last_move=None):
+        self.draw_board()  # Draw the squares
         self.highlight_squares(valid_moves, sq_selected)
         self.last_move_made(last_move)
         # Draw the pieces on top of the squares
         self.draw_pieces()
 
     # Draw the board (alternating colors)
-    def draw_board(self, hover_square=None):
+    def draw_board(self):
         global colors
         colors = [pg.Color(255, 206, 158), pg.Color(209, 139, 71)]
+
+        mouse_pos = self.key_manager.mouse_pos
+        hover_square = (mouse_pos[1] // SQ_SIZE, mouse_pos[0] // SQ_SIZE)
 
         for row in range(DIMENSION):
             for col in range(DIMENSION):
@@ -207,7 +221,7 @@ class chess():
         global colors
         dR = move.end_row - move.start_row
         dC = move.end_col - move.start_col
-        frames_per_square = 20  # Frames to move one square
+        frames_per_square = 10  # Frames to move one square
         frames_count = (abs(dR) + abs(dC)) * frames_per_square
         for frame in range(frames_count + 1):
             r, c = (move.start_row + dR * frame / frames_count,
