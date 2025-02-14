@@ -52,6 +52,7 @@ SquareLogic/
 │   │   ├── piece.py
 │   │   ├── queen.py
 │   │   └── rook.py
+│   ├── ai.py            # AI Logic
 │   ├── chess.py         # Main game logic
 │   ├── engine.py        # Game state and move validation
 │   ├── keymanager.py    # Key event handling
