@@ -154,6 +154,9 @@ class GameState:
                     self.board[move.end_row][move.end_col + 1] = "--"
 
             self.white_to_move = not self.white_to_move
+            
+            self.checkmate = False
+            self.stalemate = False
 
     def get_valid_moves(self):
         """

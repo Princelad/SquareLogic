@@ -35,7 +35,7 @@ class Chess():
         sq_selected = ()  # Keeps track of the selected square (row, col)
         player_clicks = []  # List of selected squares.
         game_over = False
-        player_one = False  # If a human is playing white, then this will be True. If an AI is playing then it will be False
+        player_one = True  # If a human is playing white, then this will be True. If an AI is playing then it will be False
         # If a human is playing black, then this will be True. If an AI is playing then it will be False
         player_two = False
 
