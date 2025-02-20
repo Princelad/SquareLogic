@@ -85,6 +85,8 @@ class Chess():
                             player_clicks = [sq_selected]
             # Handles the keys.
             elif self.key_manager.backspace_pressed:
+                if human_turn:
+                    self.game_state.undo_move()
                 self.game_state.undo_move()
                 move_made = True
                 animate = False
