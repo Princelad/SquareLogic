@@ -4,7 +4,8 @@ Main driver file. Responsible for handling user input and displaying the current
 
 import pygame as pg
 from keymanager import KeyManager
-import engine, ai
+import engine
+import ai
 
 # Constants for the window and chessboard
 WIDTH = HEIGHT = 512
@@ -14,7 +15,7 @@ MAX_FPS = 144  # For animations
 IMAGES = {}
 
 
-class chess():
+class Chess():
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -34,7 +35,7 @@ class chess():
         sq_selected = ()  # Keeps track of the selected square (row, col)
         player_clicks = []  # List of selected squares.
         game_over = False
-        player_one = True  # If a human is playing white, then this will be True. If an AI is playing then it will be False
+        player_one = False  # If a human is playing white, then this will be True. If an AI is playing then it will be False
         # If a human is playing black, then this will be True. If an AI is playing then it will be False
         player_two = False
 

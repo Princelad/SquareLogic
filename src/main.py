@@ -2,11 +2,11 @@
 Main runner for the chess game.
 '''
 
-from chess import chess
+from chess import Chess
 
 
 def main():
-    game = chess()
+    game = Chess()
     game.run()
 
 

@@ -28,17 +28,25 @@ Get the best move from the list of valid moves
 def get_best_move(game_state, valid_moves):
     turn_multiplier = 1 if game_state.white_to_move else -1
     best_move = None
-    worst_score = -CHECKMATE
+    random.shuffle(valid_moves)
+    opponent_minmax_score = CHECKMATE
     for move in valid_moves:
         game_state.make_move(move)
-        if game_state.checkmate:
-            score = CHECKMATE
-        elif game_state.stalemate:
-            score = STALEMATE
-        else:
-            score = turn_multiplier * score_material(game_state.board)
-        if score > worst_score:
-            worst_score = score
+        opponent_moves = game_state.get_valid_moves()
+        opponent_maxscore = -turn_multiplier * CHECKMATE
+        for opponent_move in opponent_moves:
+            game_state.make_move(opponent_move)
+            if game_state.checkmate:
+                score = -CHECKMATE
+            elif game_state.stalemate:
+                score = STALEMATE
+            else:
+                score = -turn_multiplier * score_material(game_state.board)
+            if score > opponent_minmax_score:
+                opponent_minmax_score = score
+            game_state.undo_move()
+        if opponent_maxscore < opponent_minmax_score:
+            opponent_minmax_score = opponent_maxscore
             best_move = move
         game_state.undo_move()
 
